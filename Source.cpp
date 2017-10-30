@@ -22,7 +22,7 @@ public:
 	int start(int a);
 	int help(int a);
 };
-int title::start(int a) {
+int title::start(int) {
 	int rot = 0;
 	rot = GetMouseWheelRotVol();
 	SetDrawScreen(DX_SCREEN_BACK);
@@ -48,7 +48,7 @@ int title::start(int a) {
 	return 0;
 }
 
-int title::help(int a) {
+int title::help(int) {
 	SetDrawScreen(DX_SCREEN_BACK);
 	DrawExtendGraph(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, haikei, TRUE);
 	DrawGraph(SCREEN_WIDTH / 2 - w / 2, 0, logo, TRUE);
@@ -67,10 +67,10 @@ int title::help(int a) {
 struct SHOT
 {
 	bool flag;
-	int x;
-	int y;
-	int vx;
-	int vy;
+	double x;
+	double y;
+	double vx;
+	double vy;
 	int ax;
 	int ay;
 	int gh;
@@ -92,7 +92,7 @@ struct LIFE
 class Player
 {
 	int death;
-	int pw, ph, j, roop, picture;
+	int pw, ph, roop, picture;
 	int mutekit = 120;
 	bool life;
 	bool mikata = TRUE;
@@ -105,7 +105,7 @@ public:
 	int draw(int c);
 	int detecthit(SHOT* a);
 };
-Player::Player(int a) {
+Player::Player(int) {
 	me[0].live = TRUE;
 	me[0].x = 0;
 	me[0].y = 0;
@@ -127,15 +127,13 @@ Player::Player(int a) {
 	roop = 0;
 }
 int Player::move() {
-	for (;;) {
-		GetMousePoint(&me[0].x, &me[0].y);
-		if (me[0].x <= 0) { me[0].x = 0; /*SetMousePoint(0, me[0].y);*/ }
-		if (me[0].x >= SCREEN_WIDTH - 30) { me[0].x = SCREEN_WIDTH - 30; SetMousePoint(SCREEN_WIDTH - 20, me[0].y); }
-		if (me[0].y <= 0) { me[0].y = 0; SetMousePoint(me[0].x, 0); }
-		if (me[0].y >= SCREEN_HEIGHT - ph) { me[0].y = SCREEN_HEIGHT - ph; SetMousePoint(me[0].x, SCREEN_HEIGHT - ph); }
-		//if (CheckHitKey(KEY_INPUT_ESCAPE) == 1)death = 0;
-		return 0;
-	}
+	GetMousePoint(&me[0].x, &me[0].y);
+	if (me[0].x <= 0) { me[0].x = 0; /*SetMousePoint(0, me[0].y);*/ }
+	if (me[0].x >= SCREEN_WIDTH - 30) { me[0].x = SCREEN_WIDTH - 30; SetMousePoint(SCREEN_WIDTH - 20, me[0].y); }
+	if (me[0].y <= 0) { me[0].y = 0; SetMousePoint(me[0].x, 0); }
+	if (me[0].y >= SCREEN_HEIGHT - ph) { me[0].y = SCREEN_HEIGHT - ph; SetMousePoint(me[0].x, SCREEN_HEIGHT - ph); }
+	//if (CheckHitKey(KEY_INPUT_ESCAPE) == 1)death = 0;
+	return 0;
 }
 SHOT* Player::shoot(const int b) {//ちくわ発射用の関数
 	int j = 1;
@@ -184,7 +182,7 @@ SHOT* Player::shoot(const int b) {//ちくわ発射用の関数
 	return bullet;
 }
 
-int Player::draw(int c) {
+int Player::draw(int) {
 	if (me[0].live)DrawGraph(me[0].x, me[0].y, me[0].ghandle, TRUE);
 	else if (mutekit % 2 == 0) { DrawGraph(me[0].x, me[0].y, me[0].ghandle, TRUE); mutekit--; }
 	else { mutekit--; }
@@ -233,26 +231,25 @@ int Player::detecthit(SHOT* a) {
 				return 1;
 			}
 		}
-		if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
-			for (int i = 0; i < ESHOT_NUM; i++) {
-				a[i].flag = FALSE;
-			}
-			PlayMovie("cutin.mp4", 1, DX_MOVIEPLAYTYPE_NORMAL);
-		}
-		/*for (int j = 0; j < PSHOT_NUM; j++) {
-		for (int i = 0; i < ENEMY_NUM; i++) {
-		if (bullet[j].flag&&a[i].flag&&a[i].x >= bullet[j].x&&a[i].x <= bullet[j].x + bullet[j].width&& a[i].y + a[i].height >= bullet[j].y&& a[i].y <= bullet[j].y + bullet[j].height) {
-		bullet[j].flag = FALSE;
-		a[i].flag = FALSE;
-		}
-		}
-		}*/
 	}
+	if (CheckHitKey(KEY_INPUT_SPACE) == 1) {
+		for (int j = 0; j < ESHOT_NUM; j++) {
+			a[j].flag = FALSE;
+		}
+		PlayMovie("cutin.mp4", 1, DX_MOVIEPLAYTYPE_NORMAL);
+	}
+	/*for (int j = 0; j < PSHOT_NUM; j++) {
+	for (int i = 0; i < ENEMY_NUM; i++) {
+	if (bullet[j].flag&&a[i].flag&&a[i].x >= bullet[j].x&&a[i].x <= bullet[j].x + bullet[j].width&& a[i].y + a[i].height >= bullet[j].y&& a[i].y <= bullet[j].y + bullet[j].height) {
+	bullet[j].flag = FALSE;
+	a[i].flag = FALSE;
+	}
+	}
+	}*/
 	return 0;
 }
 
 class Enemy {
-	int j = 0;
 	int enex, eney;
 	int itemflag, ighandle, ix, iy;
 	int hpghandle;
@@ -411,7 +408,7 @@ int Enemy::move2(int e) {
 	return 0;
 }
 
-int Enemy::move3(int f) {
+int Enemy::move3(int) {
 	for (int i = 0; i < ENEMY_NUM; i++) {
 		if (TRUE) {
 			teki[i].x -= (GetRand(5)) * teki[i].vecx;
@@ -517,7 +514,7 @@ public:
 	int clear(int d, int e, int f);
 	int resurrect(int& b);
 };
-Gameover::Gameover(int a) {
+Gameover::Gameover(int) {
 	font = CreateFontToHandle(NULL, 40, 3);
 	ClearDrawScreen();
 };
@@ -532,7 +529,7 @@ void Gameover::end(int c) {
 int Gameover::resurrect(int& score) {
 	SetDrawScreen(DX_SCREEN_BACK);
 	ClearDrawScreen();
-	for (;;) {
+	for (; ProcessMessage() == 0;) {
 		int rot = 0;
 		rot = GetMouseWheelRotVol();
 		DrawFormatStringToHandle(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3, GetColor(255, 255, 255), font, "スコア：%d", score);
@@ -567,23 +564,22 @@ int Gameover::clear(int d, int e, int f) {
 	else return 0;
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE , HINSTANCE ,
+	LPSTR , int )
 {
+	SetGraphMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32);
+	ChangeWindowMode(TRUE);
 	if (DxLib_Init() == -1)		// ＤＸライブラリ初期化処理
 	{
 		return -1;			// エラーが起きたら直ちに終了
 	}
-	int logo, seaback, mountback, font = 0, font2 = 0, life, score, eg, eg2, i = 0;
+	int logo, seaback, mountback, font = 0, font2 = 0, life, score, eg, i = 0;
 	//int *x, *y;
 	//int w, h;
-	int j = 0;
 	SHOT *p = NULL;
 	SHOT *e = NULL;
 	//SetUse3DFlag(FALSE);
-	SetGraphMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32);
 	SetDrawScreen(DX_SCREEN_BACK);
-	ChangeWindowMode(TRUE);
 	SetWindowSizeChangeEnableFlag(TRUE);
 	SetMouseDispFlag(FALSE);
 	font = CreateFontToHandle(NULL, 40, 3, -1);
@@ -602,7 +598,7 @@ retry:
 	Gameover owata(0);
 	life = 3;
 	score = 0;
-	for (i = 0; i < 2;) {
+	for (i = 0; i < 2 && ProcessMessage() == 0;) {
 		ClearDrawScreen();
 
 		if (i == 0) {
@@ -614,7 +610,18 @@ retry:
 		WaitTimer(1000 / FLAME_RATE);
 		ScreenFlip();
 	}
-	for (i = 0;; i++) {
+
+	int last_time = GetNowCount();
+
+	for (i = 0; ProcessMessage() == 0; i++) {
+
+		{
+			auto now_time = GetNowCount();
+			clsDx();
+			printfDx("frame time:%d\nfps:%f", now_time - last_time, 1000.0f / (now_time - last_time));
+			last_time = now_time;
+		}
+
 		//if (ProcessMessage() == 0 && GetMovieStateToGraph(mountback) != 1) { SeekMovieToGraph(mountback, FLAME_RATE);  PlayMovieToGraph(mountback); }
 		ClearDrawScreen();
 		DrawExtendGraph(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, mountback, FALSE);
