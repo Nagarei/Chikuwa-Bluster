@@ -135,48 +135,39 @@ int Player::move() {
 	//if (CheckHitKey(KEY_INPUT_ESCAPE) == 1)death = 0;
 	return 0;
 }
-SHOT* Player::shoot(const int b) {//ちくわ発射用の関数
+SHOT*  Player::shoot(const int b) {//ちくわ発射用の関数
 	int j = 1;
-	int k = 0;
 	if (CheckHitKey(KEY_INPUT_1) == 1)j = 1;
 	if (me[0].live) {
 		if (b - roop > 3) {
-			for (int i = 0; i < PSHOT_NUM; i++) {
+			int ability = 0;
+			for (int i = 0; i < PSHOT_NUM && ability < 3; i++) {
 				if (bullet[i].flag == false) {
 					bullet[i].flag = TRUE;
 					bullet[i].x = me[0].x + pw;
-					bullet[i].y = me[0].y + ph / 2;
-					bullet[i].ay = 98 / FLAME_RATE;//挙動が流石に草生える。なんで落ちたり落ちなかったりするのかわからん。宿題
-					bullet[i].abilty = 0;
-					for (j = 0; k < 2; j++) {//3WAYちくわの属性を与える
-						if (bullet[j].flag == false) {
-							bullet[j].flag = TRUE;
-							bullet[j].x = me[0].x + pw;
-							bullet[j].y = me[0].y + ph / 2;
-							k++;
-							bullet[j].abilty = k;
-						}
-						switch (bullet[j].abilty) {
-						case 0:
-							bullet[j].vx = PSHOT_SPEED;
-							bullet[j].vy = 0;
-							break;
-						case 1:
-							bullet[j].vx = PSHOT_SPEED*cos(M_PI / 20);
-							bullet[j].vy = int(PSHOT_SPEED*sin(M_PI / 20));
-							break;
-						case 2:
-							bullet[j].vx = PSHOT_SPEED*cos(M_PI / 20);
-							bullet[j].vy = -(int(PSHOT_SPEED*sin(M_PI / 20)));//カウント変数のミス。気を付けっましょい
-							break;
-						default:
-							break;
-						}
+					bullet[i].y = me[0].y + ph / 2.0;
+					bullet[i].ay = 9.80 / FLAME_RATE;//挙動が流石に草生える。なんで落ちたり落ちなかったりするのかわからん。宿題
+					bullet[i].abilty = ability;
+					++ability;
+					switch (bullet[i].abilty) {
+					case 0:
+						bullet[i].vx = PSHOT_SPEED;
+						bullet[i].vy = 0;
+						break;
+					case 1:
+						bullet[i].vx = PSHOT_SPEED*cos(M_PI / 20);
+						bullet[i].vy = (PSHOT_SPEED*sin(M_PI / 20));
+						break;
+					case 2:
+						bullet[i].vx = PSHOT_SPEED*cos(M_PI / 20);
+						bullet[i].vy = -((PSHOT_SPEED*sin(M_PI / 20)));//カウント変数のミス。気を付けっましょい
+						break;
+					default:
+						break;
 					}
-					roop = b;
-					break;
 				}
 			}
+			roop = b;
 		}
 	}
 	return bullet;
@@ -315,16 +306,17 @@ void Enemy::generate() {
 
 SHOT* Enemy::shoot(int b) {
 	//if (CheckHitKey(KEY_INPUT_RETURN) == 1 || CheckHitKey(KEY_INPUT_SPACE) == 1 || (GetMouseInput() & MOUSE_INPUT_LEFT) != 0) {
-	int l=0;
-	for (int i=0;i<ENEMY_NUM;i++) {
+	int l = 0;
+	for (int i = 0; i<ENEMY_NUM; i++) {
 		if (teki[i].live)l++;
 	}
 	int j = 1;
-	int h = GetRand(ENEMY_NUM);
+	int h = GetRand(ENEMY_NUM - 1);
 	if (CheckHitKey(KEY_INPUT_1) == 1)j = 1;
 	if (b - roop > 2) {
 		if (teki[h].live) {
-			for (int i = 0; i < ESHOT_NUM; i++) {
+			int ability = 0;
+			for (int i = 0; i < ESHOT_NUM && ability < 3; i++) {
 				if (bullet[i].flag == false) {
 					switch (j) {
 					case 0:
@@ -332,33 +324,27 @@ SHOT* Enemy::shoot(int b) {
 						bullet[i].x = teki[h].x + ew;
 						bullet[i].y = teki[h].y + eh / 2;
 						bullet[i].abilty = 0;
+						i = ESHOT_NUM;//forを抜ける
 						break;
 					case 1:
-						for (int k = 0; k < 3; k++) {
-							for (; ; i++) {
-								if (i > ESHOT_NUM)i = 0;
-								if (!bullet[i].flag)break;
-							}
-							bullet[i].flag = TRUE;
-							bullet[i].x = teki[h].x;
-							bullet[i].y = teki[h].y + eh / 2;
-							bullet[i].abilty = k;
-							i++;
-						}
+						bullet[i].flag = TRUE;
+						bullet[i].x = teki[h].x;
+						bullet[i].y = teki[h].y + eh / 2.0;
+						bullet[i].abilty = ability;
+						++ability;
 						break;
 					default:
 						break;
 					}
-					i = PSHOT_NUM;
-					roop = b;
 				}
 			}
+			roop = b;
 		}
 	}
 
 	for (int i = 0; i < ESHOT_NUM; i++) {
 		if (bullet[i].flag) {
-			if (bullet[i].x <-10 || bullet[i].y<0 || bullet[i].y + bullet[i].height>SCREEN_HEIGHT+10)bullet[i].flag = false;
+			if (bullet[i].x <-10 || bullet[i].y<0 || bullet[i].y + bullet[i].height>SCREEN_HEIGHT + 10)bullet[i].flag = false;
 		}
 	}
 	return bullet;
