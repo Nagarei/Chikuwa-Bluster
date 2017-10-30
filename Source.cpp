@@ -610,18 +610,7 @@ retry:
 		WaitTimer(1000 / FLAME_RATE);
 		ScreenFlip();
 	}
-
-	int last_time = GetNowCount();
-
 	for (i = 0; ProcessMessage() == 0; i++) {
-
-		{
-			auto now_time = GetNowCount();
-			clsDx();
-			printfDx("frame time:%d\nfps:%f", now_time - last_time, 1000.0f / (now_time - last_time));
-			last_time = now_time;
-		}
-
 		//if (ProcessMessage() == 0 && GetMovieStateToGraph(mountback) != 1) { SeekMovieToGraph(mountback, FLAME_RATE);  PlayMovieToGraph(mountback); }
 		ClearDrawScreen();
 		DrawExtendGraph(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, mountback, FALSE);
